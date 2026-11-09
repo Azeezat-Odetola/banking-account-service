@@ -8,11 +8,13 @@ import com.azeezat.account.service.repository.AccountRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.security.SecureRandom;
 import java.util.List;
 
 @Service
 public class AccountServiceImpl implements AccountService {
 private final AccountRepository accountRepository;
+private final SecureRandom random = new SecureRandom();
 
     public AccountServiceImpl(AccountRepository accountRepository) {
         this.accountRepository = accountRepository;
@@ -22,17 +24,29 @@ private final AccountRepository accountRepository;
     @Override
     public Account createAccount(CreateRequest request) {
 
-        Account account = new Account();
-            account.setAccountName(request.getAccountName());
-            account.setCurrency(request.getCurrency());
-            account.setStatus(Status.ACTIVE);
-            account.setCustomerId(request.getCustomerId());
-            account.setAccountType(request.getAccountType());
-            account.setAccountBalance(BigDecimal.ZERO);
+        String accountNumber;
 
-          return   accountRepository.save(account);
+        do {
+            accountNumber = generateAccountNumber();
+        } while (accountRepository.existsByAccountNumber(accountNumber));
+
+        Account account = new Account();
+
+        account.setAccountNumber(accountNumber);
+        account.setAccountName(request.getAccountName());
+        account.setCurrency(request.getCurrency());
+        account.setStatus(Status.ACTIVE);
+        account.setCustomerId(request.getCustomerId());
+        account.setAccountType(request.getAccountType());
+        account.setAccountBalance(BigDecimal.ZERO);
+
+        return accountRepository.save(account);
     }
 
+
+    public String generateAccountNumber(){
+        return String.valueOf(1000000000 + random.nextLong(9000000000L));
+    }
 
     @Override
     public List<Account> getAccountDetailsByUserId(Long userId) {
