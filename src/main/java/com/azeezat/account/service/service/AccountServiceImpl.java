@@ -3,6 +3,7 @@ package com.azeezat.account.service.service;
 import com.azeezat.account.service.dto.CreateRequest;
 import com.azeezat.account.service.entity.Account;
 import com.azeezat.account.service.entity.Status;
+import com.azeezat.account.service.exception.InvalidAccountOperationException;
 import com.azeezat.account.service.exception.ResourceNotFoundException;
 import com.azeezat.account.service.repository.AccountRepository;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,10 @@ private final SecureRandom random = new SecureRandom();
 
     public AccountServiceImpl(AccountRepository accountRepository) {
         this.accountRepository = accountRepository;
+    }
+
+    public String generateAccountNumber(){
+        return String.valueOf(1000000000 + random.nextLong(9000000000L));
     }
 
 
@@ -44,13 +49,9 @@ private final SecureRandom random = new SecureRandom();
     }
 
 
-    public String generateAccountNumber(){
-        return String.valueOf(1000000000 + random.nextLong(9000000000L));
-    }
-
     @Override
-    public List<Account> getAccountDetailsByUserId(Long userId) {
-        return accountRepository.findByUserId(userId);
+    public List<Account> getAccountDetailsByCustomerId(Long customerId) {
+        return accountRepository.findByCustomerId(customerId);
     }
 
 
@@ -65,8 +66,13 @@ private final SecureRandom random = new SecureRandom();
     @Override
     public void closeAccount(String accountNumber) {
 
+
         Account account = accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new ResourceNotFoundException("Account does not exist"));
+
+        if (account.getStatus() == Status.CLOSED){
+            throw new InvalidAccountOperationException("Account has already been closed.");
+        }
 
         account.setStatus(Status.CLOSED);
 

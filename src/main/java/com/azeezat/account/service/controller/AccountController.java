@@ -27,7 +27,7 @@ private final AccountService accountService;
 
     @GetMapping("/customer/{customerId}")
     public List<Account> getAccountDetailsByUserId(@PathVariable Long customerId){
-        return  accountService.getAccountDetailsByUserId(customerId);
+        return  accountService.getAccountDetailsByCustomerId(customerId);
     }
 
     @GetMapping("/{id}")

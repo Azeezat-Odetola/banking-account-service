@@ -18,7 +18,7 @@ public class Account {
     @NotBlank(message = "Account number is required")
     private String accountNumber;
 
-    @Column(name = "account_name")
+    @Column(name = "account_name", nullable = false)
     @NotBlank(message = "Account name is required")
     private String accountName;
 

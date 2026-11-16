@@ -3,6 +3,7 @@ package com.azeezat.account.service.dto;
 import com.azeezat.account.service.entity.AccountType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 public class CreateRequest {
 
@@ -14,6 +15,7 @@ public class CreateRequest {
 
 
     @NotNull(message = "Customer ID is required!")
+    @Positive(message = "Customer ID must be positive!")
     private Long customerId;
 
     @NotNull(message = "Account type is required!")
